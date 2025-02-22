@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IDS Dashboard - Anomalies</title>
+    <!-- Link to Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Link to your custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <!-- Sidebar Toggle Button for Mobile -->
+    <button class="sidebar-toggle">☰</button>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h4 class="text-center text-white">IDS Dashboard</h4>
+        <a href="/">Home</a>
+        <a href="/logs">Logs</a>
+        <a href="/anomalies">Anomalies</a>
+        <a href="/settings">Settings</a>
+    </div>
+    
+    <!-- Content Area -->
+    <div class="content">
+        <h2>Anomalies</h2>
+
+        <!-- Example Card for System Status -->
+        <div class="card">
+            <h3>System Status</h3>
+            <p>All systems operational. No critical issues detected.</p>
+        </div>
+
+        <!-- Anomalies Table -->
+        <table id="anomaliesTable" class="table">
+            <thead>
+                <tr>
+                    <th>Timestamp</th>
+                    <th>Source IP</th>
+                    <th>Threat</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Anomalies will be populated here by JavaScript -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- JavaScript for Sidebar Toggle and Anomalies Update -->
+    <script>
+        // Sidebar Toggle for Mobile
+        document.querySelector('.sidebar-toggle').addEventListener('click', function () {
+            document.querySelector('.sidebar').classList.toggle('active');
+        });
+
+        // Function to Update Anomalies Table
+        function updateAnomalies() {
+            fetch("/api/anomalies")
+                .then(response => response.json())
+                .then(data => {
+                    const anomaliesTable = document.getElementById("anomaliesTable").getElementsByTagName('tbody')[0];
+                    anomaliesTable.innerHTML = data.map(anomaly => `
+                        <tr>
+                            <td>${anomaly.timestamp}</td>
+                            <td>${anomaly.source_ip}</td>
+                            <td>${anomaly.threat}</td>
+                        </tr>
+                    `).join("");
+                });
+        }
+
+        // Update Anomalies Every 5 Seconds
+        setInterval(updateAnomalies, 5000);
+        updateAnomalies(); // Initial call to populate the table
+    </script>
+
+    <!-- Link to Bootstrap JS (Optional) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
